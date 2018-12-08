@@ -1,0 +1,54 @@
+<template>
+    <style>
+        div {
+            background: red;
+        }
+    </style>
+
+    <div>
+        Contador: <span id="value">0</span>
+    </div>
+
+    <button id="increase">
+        Aumentar
+    </button>
+</template>
+
+<script>
+    class Counter extends HTMLElement {
+        constructor() {
+            super();
+
+            this.contador = 0;
+
+            const shadow = this.attachShadow({
+                mode: 'open'
+            });
+
+            const template = document.querySelector('#counter-import')
+                .import
+                .querySelector('template')
+                .content
+                .cloneNode(true);
+
+            shadow.appendChild(template);
+
+            const increase = shadow.querySelector('#increase');
+            increase.onclick = () => {
+                this.contador++;
+
+                shadow.querySelector('#value').textContent = this.contador;
+
+                this.dispatchEvent(new CustomEvent('increased'));
+
+                if (this.contador == this.getAttribute('avisar')) {
+                    const aviso = document.createElement('div');
+                    aviso.textContent = 'O contador chegou em: ' + this.getAttribute('avisar');
+                    shadow.appendChild(aviso);
+                }
+            };
+        }
+    }
+
+    customElements.define('app-counter', Counter);
+</script>
