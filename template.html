@@ -1,0 +1,75 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+</head>
+
+<body>
+    <template id="counter-template">
+        <style>
+            div {
+                background: red;
+            }
+        </style>
+
+        <div>
+            Contador: <span id="value">0</span>
+        </div>
+
+        <button id="increase">
+            Aumentar
+        </button>
+    </template>
+
+    <div>Texto de exemplo</div>
+
+    <app-counter avisar="3" id="contador1"></app-counter>
+    <app-counter avisar="5"></app-counter>
+
+    <script>
+        document.getElementById('contador1')
+            .addEventListener('increased', function () {
+                console.log('Contador:', this.contador);
+            });
+    </script>
+
+    <script>
+        class Counter extends HTMLElement {
+            constructor() {
+                super();
+
+                this.contador = 0;
+
+                const shadow = this.attachShadow({
+                    mode: 'open'
+                });
+
+                const template = document.getElementById('counter-template').content.cloneNode(true);
+
+                shadow.appendChild(template);
+
+                const increase = shadow.querySelector('#increase');
+                increase.onclick = () => {
+                    this.contador++;
+
+                    shadow.querySelector('#value').textContent = this.contador;
+
+                    this.dispatchEvent(new CustomEvent('increased'));
+
+                    if (this.contador == this.getAttribute('avisar')) {
+                        const aviso = document.createElement('div');
+                        aviso.textContent = 'O contador chegou em: ' + this.getAttribute('avisar');
+                        shadow.appendChild(aviso);
+                    }
+                };
+            }
+        }
+
+        customElements.define('app-counter', Counter);
+    </script>
+</body>
+
+</html>
